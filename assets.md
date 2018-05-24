@@ -14,7 +14,8 @@ This module represents our resource abstractions that we'll be able to manipulat
 A new asset is a data type, usually a record, that describes its properties and characteristics, in which we manipulate through our transformations. A transformation is a set of functions used to alter our final builded Product, and their usage is described in our Configuration Knowledge DSL file.
 
 In our implementation, an Asset is a Typeclass in which we describe how the functions must be implemented by our signatures, and fully work with Hephaestus. Our typeclass is defined as follows:
-```
+
+```haskell
       class Asset a where
         initialize :: Product a
         parserT    :: Parsec String () (Transformation a)
@@ -59,19 +60,44 @@ Data/
 
 The **Data.Assets** module is where we export our assets implementations to be used elsewhere.
 
-A directory holds each individual asset module, which also follows a structre. The standardization of this repository allows Hephaestus to provide all of its functionalities to every asset, independent of how they are implemented, that is why it's so important.
+A directory holds each individual asset module, which also follows a structre. The standardization of this repository allows Hephaestus to provide all of its functionalities to every asset, independent of how they are implemented.
 
 We have a simple example asset, HelloWorld, which shows clearly what has to be defined, and we'll use it as reference to explain what each file
 is supposed to do.
 
-The purpose of each module below:
+The purpose of each module is:
 
 *   **Data.Types**  
 
-    The
+    The module where we define our new data type that represents our asset, usually in a record format. In this same module, we specify the functions that will represent the transformations we can do with such asset.
 
 *   **Data.ParserT**  
 
-    This is the parser implementation. In Hephaestus we use the [Parsec](http://hackage.haskell.org/package/parsec) library to write our parsers.
+    This is the transformation parser implementation. In Hephaestus we use the [Parsec](http://hackage.haskell.org/package/parsec) library to write our parsers.
 
-*   **Data.Asset** \- logic to export a final builded product
+    The parser must read and interpret the transformation part of a Confuration Knowledge file. In the HelloWorld example, we have a setMessage transformation, and in a .ck file, it would take the form of
+
+    ```
+    ... => [setMessage("HelloWorld!"), setMessage("Overrding"), ...)]
+    ```
+
+    Our ParserT module is responsible for parsing **only** the function part, the *setMessage("HelloWorld!")*, and accordingly, return a transformation that corresponds to the function defined on **Data.Types**
+
+*   **Data.Asset**
+
+    In this module, we instantiate our asset defined on **Data.Types** to the Asset typeclass, and implement the three necessary functions for it.
+
+    The initialize is trivial, only initializing an empty product.
+
+    The parserT is direct, referencing the parser defined in **Data.ParserT**.
+
+    The export function is the logic to export a builded product and do what you
+    desire with it.
+
+*   **Main.hs**    
+
+    The main module where we export the implementation of our asset, and make it available to be imported by **Data.Assets**
+
+It's important to pay attention to module names, and make them correspond to their folder structure in the repository.
+
+Happy coding, and let's enrich Hephaestus environment with new assets. Cheers !
