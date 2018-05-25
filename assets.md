@@ -25,7 +25,7 @@ In our implementation, an Asset is a Typeclass in which we describe how the func
 
 Our other main SPL types are defined in [here](https://github.com/hephaestus-ng/hephaestus-spl/blob/master/src/Data/SPL.hs)
 
-Any asset instance **must** implement those three methods.
+Any asset instance must implement those three behaviours.
 
 *   **initialize** \- used to define a base Asset instantiation, such as initializing all it's properties with empty values
 *   **parserT** \- refers to the parser that will recognize the transformations described in our Configuration Knowledge
