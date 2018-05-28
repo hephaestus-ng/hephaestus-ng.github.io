@@ -2,6 +2,6 @@
 
 layout: page
 title: Feature Model
-permalink: /fm/
+permalink: /docs/fm
 
 ---

@@ -2,7 +2,7 @@
 
 layout: page
 title: Assets
-permalink: /assets/
+permalink: /docs/assets/
 
 ---
 

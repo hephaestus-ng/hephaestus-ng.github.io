@@ -9,13 +9,13 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="A Software Product Line tool for managing variability, and representation of its semantics through the high expressiveness of Haskell." />
 <meta property="og:description" content="A Software Product Line tool for managing variability, and representation of its semantics through the high expressiveness of Haskell." />
-<link rel="canonical" href="/assets/" />
-<meta property="og:url" content="/assets/" />
+<link rel="canonical" href="http://localhost:4000/docs/assets/" />
+<meta property="og:url" content="http://localhost:4000/docs/assets/" />
 <meta property="og:site_name" content="Hephaestus" />
 <script type="application/ld+json">
-{"description":"A Software Product Line tool for managing variability, and representation of its semantics through the high expressiveness of Haskell.","@type":"WebPage","url":"/assets/","headline":"Assets","@context":"http://schema.org"}</script>
+{"description":"A Software Product Line tool for managing variability, and representation of its semantics through the high expressiveness of Haskell.","@type":"WebPage","url":"http://localhost:4000/docs/assets/","headline":"Assets","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Hephaestus" /></head>
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Hephaestus" /></head>
 <body><header class="site-header" role="banner">
 
   <div class="wrapper"><a class="site-title" rel="author" href="/">Hephaestus</a><nav class="site-nav">
@@ -28,7 +28,11 @@
           </span>
         </label>
 
-        <div class="trigger"><a class="page-link" href="/assets/">Assets</a><a class="page-link" href="/fm/">Feature Model</a><a class="page-link" href="/shell/">Shell</a><a class="page-link" href="/spl/">SPL</a></div>
+        <div class="trigger">
+          <a class="page-link" href="/usage/">Usage</a>
+          <a class="page-link" href="/docs/">Documentation</a>
+          <a class="page-link" href="/contact/">Contact</a>
+        </div>
       </nav></div>
 </header>
 <main class="page-content" aria-label="Content">
@@ -47,15 +51,16 @@
 <p>A new asset is a data type, usually a record, that describes its properties and characteristics, in which we manipulate through our transformations. A transformation is a set of functions used to alter our final builded Product, and their usage is described in our Configuration Knowledge DSL file.</p>
 
 <p>In our implementation, an Asset is a Typeclass in which we describe how the functions must be implemented by our signatures, and fully work with Hephaestus. Our typeclass is defined as follows:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>      class Asset a where
-        initialize :: Product a
-        parserT    :: Parsec String () (Transformation a)
-        export     :: Source -&gt; Target -&gt; Product a -&gt; IO ()
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>      <span class="kr">class</span> <span class="kt">Asset</span> <span class="n">a</span> <span class="kr">where</span>
+        <span class="n">initialize</span> <span class="o">::</span> <span class="kt">Product</span> <span class="n">a</span>
+        <span class="n">parserT</span>    <span class="o">::</span> <span class="kt">Parsec</span> <span class="kt">String</span> <span class="nb">()</span> <span class="p">(</span><span class="kt">Transformation</span> <span class="n">a</span><span class="p">)</span>
+        <span class="n">export</span>     <span class="o">::</span> <span class="kt">Source</span> <span class="o">-&gt;</span> <span class="kt">Target</span> <span class="o">-&gt;</span> <span class="kt">Product</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">IO</span> <span class="nb">()</span>
 </code></pre></div></div>
 
 <p>Our other main SPL types are defined in <a href="https://github.com/hephaestus-ng/hephaestus-spl/blob/master/src/Data/SPL.hs">here</a></p>
 
-<p>Any asset instance <strong>must</strong> implement those three methods.</p>
+<p>Any asset instance must implement those three behaviours.</p>
 
 <ul>
   <li><strong>initialize</strong> - used to define a base Asset instantiation, such as initializing all it’s properties with empty values</li>
@@ -88,28 +93,53 @@
 
 <p>The <strong>Data.Assets</strong> module is where we export our assets implementations to be used elsewhere.</p>
 
-<p>A directory holds each individual asset module, which also follows a structre. The standardization of this repository allows Hephaestus to provide all of its functionalities to every asset, independent of how they are implemented, that is why it’s so important.</p>
+<p>A directory holds each individual asset module, which also follows a structre. The standardization of this repository allows Hephaestus to provide all of its functionalities to every asset, independent of how they are implemented.</p>
 
 <p>We have a simple example asset, HelloWorld, which shows clearly what has to be defined, and we’ll use it as reference to explain what each file
 is supposed to do.</p>
 
-<p>The purpose of each module below:</p>
+<p>The purpose of each module is:</p>
 
 <ul>
   <li>
     <p><strong>Data.Types</strong></p>
 
-    <p>The</p>
+    <p>The module where we define our new data type that represents our asset, usually in a record format. In this same module, we specify the functions that will represent the transformations we can do with such asset.</p>
   </li>
   <li>
     <p><strong>Data.ParserT</strong></p>
 
-    <p>This is the parser implementation. In Hephaestus we use the <a href="http://hackage.haskell.org/package/parsec">Parsec</a> library to write our parsers.</p>
+    <p>This is the transformation parser implementation. In Hephaestus we use the <a href="http://hackage.haskell.org/package/parsec">Parsec</a> library to write our parsers.</p>
+
+    <p>The parser must read and interpret the transformation part of a Confuration Knowledge file. In the HelloWorld example, we have a setMessage transformation, and in a .ck file, it would take the form of</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>... =&gt; [setMessage("HelloWorld!"), setMessage("Overrding"), ...)]
+</code></pre></div>    </div>
+
+    <p>Our ParserT module is responsible for parsing <strong>only</strong> the function part, the <em>setMessage(“HelloWorld!”)</em>, and accordingly, return a transformation that corresponds to the function defined on <strong>Data.Types</strong></p>
   </li>
   <li>
-    <p><strong>Data.Asset</strong> - logic to export a final builded product</p>
+    <p><strong>Data.Asset</strong></p>
+
+    <p>In this module, we instantiate our asset defined on <strong>Data.Types</strong> to the Asset typeclass, and implement the three necessary functions for it.</p>
+
+    <p>The initialize is trivial, only initializing an empty product.</p>
+
+    <p>The parserT is direct, referencing the parser defined in <strong>Data.ParserT</strong>.</p>
+
+    <p>The export function is the logic to export a builded product and do what you
+desire with it.</p>
+  </li>
+  <li>
+    <p><strong>Main.hs</strong></p>
+
+    <p>The main module where we export the implementation of our asset, and make it available to be imported by <strong>Data.Assets</strong></p>
   </li>
 </ul>
+
+<p>It’s important to pay attention to module names, and make them correspond to their folder structure in the repository.</p>
+
+<p>Happy coding, and let’s enrich Hephaestus environment with new assets. Cheers !</p>
 
   </div>
 

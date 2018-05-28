@@ -2,6 +2,6 @@
 
 layout: page
 title: Shell
-permalink: /shell/
+permalink: /docs/shell/
 
 ---
