@@ -11,9 +11,9 @@ permalink: /docs/assets/
 
 This module represents our resource abstractions that we'll be able to manipulate through Hephaestus. It can be any abstraction that you wish to work with as a product line, and have access to our SPL semantics and functionalities described in our code base.
 
-A new asset is a data type, usually a record, that describes its properties and characteristics, in which we manipulate through our transformations. A transformation is a set of functions used to alter our final builded Product, and their usage is described in our Configuration Knowledge DSL file.
+A new asset is a data type, usually a record, that describes its properties and characteristics, in which we manipulate through our transformations. A transformation is a set of functions used to alter our final builded Product, and their usage is described in our Configuration Knowledge (CK) DSL file.
 
-In our implementation, an Asset is a Typeclass in which we describe how the functions must be implemented by our signatures, and fully work with Hephaestus. Our typeclass is defined as follows:
+In our implementation, an asset is a typeclass that describes how the functions must be implemented to fully work with Hephaestus. Our typeclass is defined as follows:
 
 ```haskell
       class Asset a where
@@ -58,24 +58,23 @@ Data/
 ```
 
 
-The **Data.Assets** module is where we export our assets implementations to be used elsewhere.
+The **Data.Assets** module is the main module that exports all assets.
 
-A directory holds each individual asset module, which also follows a structre. The standardization of this repository allows Hephaestus to provide all of its functionalities to every asset, independent of how they are implemented.
+A directory holds each individual asset module, which also follows a recommended structre. However, you are free to structure your code the way you prefer, as long as the module exportation stays the same way.
 
-We have a simple example asset, HelloWorld, which shows clearly what has to be defined, and we'll use it as reference to explain what each file
-is supposed to do.
+We have a simple example asset, HelloWorld, which shows clearly what has to be defined, and we'll use it as reference to explain what each file is supposed to do.
 
-The purpose of each module is:
+The purpose of each module inside an asset is:
 
 *   **Data.Types**  
 
-    The module where we define our new data type that represents our asset, usually in a record format. In this same module, we specify the functions that will represent the transformations we can do with such asset.
+    define our new data type that represents our asset, usually in a record format. In this same module, we specify the functions that will represent the transformations we can do with such asset.
 
 *   **Data.ParserT**  
 
-    This is the transformation parser implementation. In Hephaestus we use the [Parsec](http://hackage.haskell.org/package/parsec) library to write our parsers.
+    implement the transformation parser. In Hephaestus we use the [Parsec](http://hackage.haskell.org/package/parsec) library to write our parsers.
 
-    The parser must read and interpret the transformation part of a Confuration Knowledge file. In the HelloWorld example, we have a setMessage transformation, and in a .ck file, it would take the form of
+    The parser must read and interpret the transformation part of a CK file. In the HelloWorld example, we have a setMessage transformation, and in a .ck file, it would take the form of
 
     ```
     ... => [setMessage("HelloWorld!"), setMessage("Overrding"), ...)]
